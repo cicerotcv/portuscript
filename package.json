@@ -4,7 +4,7 @@
   "description": "Simplified Javascript interpreter with portuguese tokens.",
   "main": "index.js",
   "scripts": {
-    "install-precommit": "husky install",
+    "husky:install": "husky install",
     "prettier:check": "prettier --check src",
     "prettier:write": "prettier --write src",
     "tests": "jest --verbose",
