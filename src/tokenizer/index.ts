@@ -1,17 +1,9 @@
 import { WHITESPACES } from "../constants";
 import { IToken, Token } from "../token";
-import { BuiltIns } from "../types/builtins";
-import { Delimiters } from "../types/delimiters";
-import { Operations } from "../types/operations";
-
-type TokenType =
-  | IToken<BuiltIns.number, number>
-  | IToken<Operations>
-  | IToken<Delimiters>;
 
 export class Tokenizer {
   source: string;
-  current!: TokenType;
+  current!: IToken<number | undefined>;
   position: number;
 
   constructor(source: string) {

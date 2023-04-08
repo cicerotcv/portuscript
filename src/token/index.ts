@@ -1,18 +1,17 @@
-import { TokenTypes } from "../types";
 import { BuiltIns } from "../types/builtins";
 import { Delimiters } from "../types/delimiters";
 import { Operations } from "../types/operations";
 
-export type IToken<T extends TokenTypes, V = null> = {
-  type: T;
+export type IToken<V = null> = {
+  type: string;
   value: V;
 };
 
-export class Token<T extends TokenTypes, V> implements IToken<T, V> {
-  readonly type;
-  readonly value: V;
+export class Token<V> implements IToken<V> {
+  type: string;
+  value: V;
 
-  constructor(type: T, value: V) {
+  constructor(type: string, value: V) {
     this.type = type;
     this.value = value;
   }
