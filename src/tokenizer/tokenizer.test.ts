@@ -3,14 +3,24 @@ import { Token } from "../token";
 
 describe("Tokenizer", () => {
   describe("Operations", () => {
-    test("should return 'plus' token", () => {
+    test("should recognize 'plus' token", () => {
       const token = new Tokenizer("+").current;
       expect(token).toEqual(Token.plus());
     });
 
-    test("should return 'minus' token", () => {
+    test("should recognize 'minus' token", () => {
       const token = new Tokenizer("-").current;
       expect(token).toEqual(Token.minus());
+    });
+
+    test("should recognize 'multi' token", () => {
+      const token = new Tokenizer("*").current;
+      expect(token).toEqual(Token.multi());
+    });
+
+    test("should recognize 'div' token", () => {
+      const token = new Tokenizer("/").current;
+      expect(token).toEqual(Token.div());
     });
   });
 

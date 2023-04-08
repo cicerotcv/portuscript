@@ -25,5 +25,7 @@ export class Token<T extends TokenTypes, V> implements IToken<T, V> {
   static number = (value: number) => new Token(BuiltIns.number, value);
   static plus = () => new Token(Operations.plus, null);
   static minus = () => new Token(Operations.minus, null);
+  static multi = () => new Token(Operations.multi, null);
+  static div = () => new Token(Operations.div, null);
   static eof = () => new Token(Delimiters.eof, null);
 }

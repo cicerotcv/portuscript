@@ -60,6 +60,18 @@ export class Tokenizer {
       return this.current;
     }
 
+    if (this.currentChar === "*") {
+      this.current = Token.multi();
+      this.position++;
+      return this.current;
+    }
+
+    if (this.currentChar === "/") {
+      this.current = Token.div();
+      this.position++;
+      return this.current;
+    }
+
     if (this.isNumber(this.currentChar)) {
       let candidate = "";
 
