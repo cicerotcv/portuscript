@@ -1,3 +1,3 @@
-export enum BuiltIns {
-  number = "number",
-}
+export const BuiltIns = {
+  number: "number",
+};

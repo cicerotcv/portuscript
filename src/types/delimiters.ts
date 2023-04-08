@@ -1,3 +1,3 @@
-export enum Delimiters {
-  eof = "eof",
-}
+export const Delimiters = {
+  eof: "eof",
+};
