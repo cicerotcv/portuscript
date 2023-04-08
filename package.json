@@ -7,7 +7,7 @@
     "husky:install": "husky install",
     "prettier:check": "prettier --check src",
     "prettier:write": "prettier --write src",
-    "tests": "jest --verbose",
+    "test": "jest --verbose",
     "build": "tsup src/index.ts --format cjs,esm --dts"
   },
   "preommit.silent": false,
