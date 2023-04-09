@@ -1,10 +1,6 @@
 import { Parser } from ".";
 
 describe("Parser", () => {
-  beforeEach(() => {
-    Parser.tokenizer = undefined;
-  });
-
   describe("Expression", () => {
     // simple binary operations
     Object.entries({
