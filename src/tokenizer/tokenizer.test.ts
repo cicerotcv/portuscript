@@ -1,5 +1,6 @@
 import { Tokenizer } from ".";
 import { Token } from "../token";
+import { Delimiters } from "../types/delimiters";
 
 describe("Tokenizer", () => {
   describe("Operations", () => {
@@ -21,6 +22,17 @@ describe("Tokenizer", () => {
     test("should recognize 'div' token", () => {
       const token = new Tokenizer("/").current;
       expect(token).toEqual(Token.div());
+    });
+  });
+
+  describe("Delimiters", () => {
+    test("should recognize '(' token", () => {
+      const token = new Tokenizer("(").current;
+      expect(token).toEqual(new Token(Delimiters.openingParentheses, null));
+    });
+    test("should recognize ')' token", () => {
+      const token = new Tokenizer(")").current;
+      expect(token).toEqual(new Token(Delimiters.closingParentheses, null));
     });
   });
 

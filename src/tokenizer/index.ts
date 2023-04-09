@@ -1,9 +1,11 @@
 import { WHITESPACES } from "../constants";
 import { IToken, Token } from "../token";
+import { Delimiters } from "../types/delimiters";
+import { NumberUtils } from "../utils/numbers";
 
 export class Tokenizer {
   source: string;
-  current!: IToken<number | undefined>;
+  current!: IToken<unknown>;
   position: number;
 
   constructor(source: string) {
@@ -18,10 +20,6 @@ export class Tokenizer {
 
   get hasReachedEnd() {
     return this.position >= this.source.length;
-  }
-
-  private isNumber(char: string) {
-    return !isNaN(Number(char));
   }
 
   selectNext() {
@@ -63,15 +61,25 @@ export class Tokenizer {
       this.position++;
       return this.current;
     }
+    if (this.currentChar === "(") {
+      this.current = new Token(Delimiters.openingParentheses, null);
+      this.position++;
+      return this.current;
+    }
+    if (this.currentChar === ")") {
+      this.current = new Token(Delimiters.closingParentheses, null);
+      this.position++;
+      return this.current;
+    }
 
-    if (this.isNumber(this.currentChar)) {
+    if (NumberUtils.isNumber(this.currentChar)) {
       let candidate = "";
 
-      while (this.isNumber(this.currentChar) && !this.hasReachedEnd) {
+      while (NumberUtils.isNumber(this.currentChar) && !this.hasReachedEnd) {
         candidate += this.currentChar;
         this.position++;
       }
-
+      if (candidate === " ") console.error(true);
       this.current = Token.number(Number(candidate));
       return this.current;
     }
