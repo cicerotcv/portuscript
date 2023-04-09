@@ -16,7 +16,7 @@ export class Token<V> implements IToken<V> {
     this.value = value;
   }
 
-  inspect() {
+  toString() {
     if (!this.value) return `Token(${this.type})`;
     return `Token(${this.type}, ${this.value})`;
   }
