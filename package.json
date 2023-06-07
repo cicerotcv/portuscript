@@ -1,5 +1,5 @@
 {
-  "name": "portuscript",
+  "name": "@cicerotcv/blueprint",
   "version": "0.0.1",
   "description": "Simplified Javascript interpreter with portuguese tokens.",
   "main": "index.js",
