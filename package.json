@@ -2,7 +2,13 @@
   "name": "@cicerotcv/portuscript",
   "version": "1.0.0",
   "description": "Simplified Javascript interpreter with portuguese tokens.",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cicerotcv/portuscript.git"
+  },
   "scripts": {
     "husky:install": "husky install",
     "prettier:check": "prettier --check src",
