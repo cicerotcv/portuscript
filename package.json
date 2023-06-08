@@ -15,7 +15,8 @@
     "prettier:check": "prettier --check src",
     "prettier:write": "prettier --write src",
     "test": "jest --verbose",
-    "build": "tsup src/index.ts --format cjs,esm --dts"
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "release": "pnpm run build && changeset publish"
   },
   "preommit.silent": false,
   "precommit": [
