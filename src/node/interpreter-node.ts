@@ -3,7 +3,7 @@ export interface Evaluable<T> {
 }
 
 export abstract class InterpreterNode<
-  ValueType extends string | number,
+  ValueType extends string | number | null,
   ChildrenType extends Array<any>
 > {
   value: ValueType;
