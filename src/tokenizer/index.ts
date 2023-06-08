@@ -2,6 +2,9 @@ import { WHITESPACES } from "../constants";
 import { IToken, Token } from "../token";
 import { Delimiters } from "../types/delimiters";
 import { NumberUtils } from "../utils/numbers";
+import { Reserved } from "../types/reserved";
+import { StringUtils } from "../utils/string";
+import { Special } from "../types/special";
 
 export class Tokenizer {
   source: string;
@@ -61,11 +64,13 @@ export class Tokenizer {
       this.position++;
       return this.current;
     }
+
     if (this.currentChar === "(") {
       this.current = new Token(Delimiters.openingParentheses, null);
       this.position++;
       return this.current;
     }
+
     if (this.currentChar === ")") {
       this.current = new Token(Delimiters.closingParentheses, null);
       this.position++;
@@ -81,6 +86,26 @@ export class Tokenizer {
       }
       if (candidate === " ") console.error(true);
       this.current = Token.number(Number(candidate));
+      return this.current;
+    }
+
+    if (StringUtils.isChar(this.currentChar)) {
+      let candidate = "";
+
+      while (
+        StringUtils.isAcceptableChar(this.currentChar) &&
+        !this.hasReachedEnd
+      ) {
+        candidate += this.currentChar;
+        this.position++;
+      }
+
+      if (Object.values(Reserved).includes(candidate)) {
+        this.current = new Token(candidate, null); // reserved word
+      } else {
+        this.current = new Token(Special.identifier, candidate);
+      }
+
       return this.current;
     }
 
