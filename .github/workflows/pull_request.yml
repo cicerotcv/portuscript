@@ -1,14 +1,17 @@
-name: Publish 🚀
+name: pull_request
 
 on:
-  push:
-    branches: ["main"]
-
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "src/**"
+      - "jest.config.js"
+      - "package.json"
 
 jobs:
-  release:
-    name: publish
+  test:
+    name: Check Pull Request
     runs-on: ubuntu-latest
     steps:
       - name: 📚 checkout
@@ -32,10 +35,5 @@ jobs:
       - name: 🧪 run tests
         run: pnpm run test
 
-      - name: 🚀 create release PR or publish
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          publish: pnpm run build
-        env:
-          GITHUB_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: ⚙ build
+        run: pnpm run build
