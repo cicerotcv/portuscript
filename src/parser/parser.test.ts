@@ -82,5 +82,29 @@ describe("Parser", () => {
         );
       });
     });
+
+    describe("Print", () => {
+      const logSpy = jest.spyOn(console, "log").mockImplementation(jest.fn());
+
+      beforeEach(() => {
+        // clear console.log number of calls, etc.
+        logSpy.mockClear();
+      });
+
+      afterAll(() => {
+        // reset console.log implementation
+        logSpy.mockRestore();
+      });
+
+      test("shoult print one number", () => {
+        Parser.run("{ imprima(1); }");
+        expect(logSpy).toBeCalledWith("1");
+      });
+
+      test("shoult print multiple numbers", () => {
+        Parser.run("{ imprima(1, 2, 3); }");
+        expect(logSpy).toBeCalledWith("1 2 3");
+      });
+    });
   });
 });

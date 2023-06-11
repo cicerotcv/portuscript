@@ -62,6 +62,11 @@ describe("Tokenizer", () => {
       const token = new Tokenizer(";").current;
       expect(token).toEqual(new Token(Delimiters.semiColon, null));
     });
+
+    test("should recognize ',' token", () => {
+      const token = new Tokenizer(",").current;
+      expect(token).toEqual(new Token(Delimiters.comma, null));
+    });
   });
 
   describe("Built-in types", () => {
@@ -87,6 +92,11 @@ describe("Tokenizer", () => {
     test("should recognize 'constante'", () => {
       const token = new Tokenizer("constante").current;
       expect(token).toEqual(new Token(Reserved.constante, null));
+    });
+
+    test("should recognize 'imprima'", () => {
+      const token = new Tokenizer("imprima").current;
+      expect(token).toEqual(new Token(Reserved.imprima, null));
     });
   });
 

@@ -6,6 +6,7 @@ import { Identifier } from "../node/identifier";
 import { Evaluable, InterpreterNode } from "../node/interpreter-node";
 import { IntVal } from "../node/intval";
 import { NoOp } from "../node/noop";
+import { Print } from "../node/print";
 import { UnOp } from "../node/unop";
 import { VarDec } from "../node/vardec";
 import { Tokenizer } from "../tokenizer";
@@ -113,6 +114,31 @@ export class Parser {
       if (tokens.current.type !== Delimiters.semiColon)
         throw Error(`Expected ';' and received ${tokens.current}`);
       tokens.selectNext();
+    }
+
+    if (tokens.current.type === Reserved.imprima) {
+      tokens.selectNext();
+
+      if (tokens.current.type !== Delimiters.openingParentheses)
+        throw Error(`Expected '(' and received ${tokens.current}`);
+      tokens.selectNext();
+
+      const children = [Parser.parseExpression()];
+
+      while (tokens.current.type === Delimiters.comma) {
+        tokens.selectNext();
+        children.push(Parser.parseExpression());
+      }
+
+      if (tokens.current.type !== Delimiters.closingParentheses)
+        throw Error(`Expected ')' and received ${tokens.current}`);
+      tokens.selectNext();
+
+      if (tokens.current.type !== Delimiters.semiColon)
+        throw Error(`Expected ';' and received ${tokens.current}`);
+      tokens.selectNext();
+
+      statement = new Print(children);
     }
 
     return statement;
