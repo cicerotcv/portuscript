@@ -42,6 +42,15 @@ describe("Tokenizer", () => {
       const token = new Tokenizer(")").current;
       expect(token).toEqual(new Token(Delimiters.closingParentheses, null));
     });
+
+    test("should recognize '{' token", () => {
+      const token = new Tokenizer("{").current;
+      expect(token).toEqual(new Token(Delimiters.openingCurlyBrackets, null));
+    });
+    test("should recognize '}' token", () => {
+      const token = new Tokenizer("}").current;
+      expect(token).toEqual(new Token(Delimiters.closingCurlyBrackets, null));
+    });
   });
 
   describe("Built-in types", () => {

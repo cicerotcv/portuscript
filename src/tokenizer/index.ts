@@ -77,6 +77,18 @@ export class Tokenizer {
       return this.current;
     }
 
+    if (this.currentChar === "{") {
+      this.current = new Token(Delimiters.openingCurlyBrackets, null);
+      this.position++;
+      return this.current;
+    }
+
+    if (this.currentChar === "}") {
+      this.current = new Token(Delimiters.closingCurlyBrackets, null);
+      this.position++;
+      return this.current;
+    }
+
     if (NumberUtils.isNumber(this.currentChar)) {
       let candidate = "";
 
