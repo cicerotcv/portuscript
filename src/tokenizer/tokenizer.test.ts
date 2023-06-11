@@ -1,6 +1,15 @@
 import { Tokenizer } from ".";
 import { Token } from "../token";
 import { Delimiters } from "../types/delimiters";
+import { Operations } from "../types/operations";
+import { Reserved } from "../types/reserved";
+import { Special } from "../types/special";
+
+const createIdentifierTest = (identifier: string) =>
+  test(`should recognize identifier '${identifier}'`, () => {
+    const token = new Tokenizer(identifier).current;
+    expect(token).toEqual(new Token(Special.identifier, identifier));
+  });
 
 describe("Tokenizer", () => {
   describe("Operations", () => {
@@ -23,6 +32,11 @@ describe("Tokenizer", () => {
       const token = new Tokenizer("/").current;
       expect(token).toEqual(Token.div());
     });
+
+    test("should recognize 'assign' token", () => {
+      const token = new Tokenizer("=").current;
+      expect(token).toEqual(new Token(Operations.assign, null));
+    });
   });
 
   describe("Delimiters", () => {
@@ -33,6 +47,25 @@ describe("Tokenizer", () => {
     test("should recognize ')' token", () => {
       const token = new Tokenizer(")").current;
       expect(token).toEqual(new Token(Delimiters.closingParentheses, null));
+    });
+
+    test("should recognize '{' token", () => {
+      const token = new Tokenizer("{").current;
+      expect(token).toEqual(new Token(Delimiters.openingCurlyBrackets, null));
+    });
+    test("should recognize '}' token", () => {
+      const token = new Tokenizer("}").current;
+      expect(token).toEqual(new Token(Delimiters.closingCurlyBrackets, null));
+    });
+
+    test("should recognize ';' token", () => {
+      const token = new Tokenizer(";").current;
+      expect(token).toEqual(new Token(Delimiters.semiColon, null));
+    });
+
+    test("should recognize ',' token", () => {
+      const token = new Tokenizer(",").current;
+      expect(token).toEqual(new Token(Delimiters.comma, null));
     });
   });
 
@@ -48,6 +81,32 @@ describe("Tokenizer", () => {
         expect(token).toEqual(Token.number(123));
       });
     });
+  });
+
+  describe("Reserved", () => {
+    test("should recognize 'seja'", () => {
+      const token = new Tokenizer("seja").current;
+      expect(token).toEqual(new Token(Reserved.seja, null));
+    });
+
+    test("should recognize 'constante'", () => {
+      const token = new Tokenizer("constante").current;
+      expect(token).toEqual(new Token(Reserved.constante, null));
+    });
+
+    test("should recognize 'imprima'", () => {
+      const token = new Tokenizer("imprima").current;
+      expect(token).toEqual(new Token(Reserved.imprima, null));
+    });
+  });
+
+  describe("Special", () => {
+    createIdentifierTest("a");
+    createIdentifierTest("__a__");
+    createIdentifierTest("abc");
+    createIdentifierTest("abc_123");
+    createIdentifierTest("abc123");
+    createIdentifierTest("ABC123");
   });
 
   describe("Miscellaneous", () => {

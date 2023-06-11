@@ -3,4 +3,5 @@ export const Operations = {
   minus: "minus",
   div: "div",
   multi: "multi",
+  assign: "assign",
 };
