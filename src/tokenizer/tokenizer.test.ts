@@ -1,6 +1,7 @@
 import { Tokenizer } from ".";
 import { Token } from "../token";
 import { Delimiters } from "../types/delimiters";
+import { Operations } from "../types/operations";
 import { Reserved } from "../types/reserved";
 import { Special } from "../types/special";
 
@@ -30,6 +31,11 @@ describe("Tokenizer", () => {
     test("should recognize 'div' token", () => {
       const token = new Tokenizer("/").current;
       expect(token).toEqual(Token.div());
+    });
+
+    test("should recognize 'assign' token", () => {
+      const token = new Tokenizer("=").current;
+      expect(token).toEqual(new Token(Operations.assign, null));
     });
   });
 

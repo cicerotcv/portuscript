@@ -5,6 +5,7 @@ import { NumberUtils } from "../utils/numbers";
 import { Reserved } from "../types/reserved";
 import { StringUtils } from "../utils/string";
 import { Special } from "../types/special";
+import { Operations } from "../types/operations";
 
 export class Tokenizer {
   source: string;
@@ -61,6 +62,12 @@ export class Tokenizer {
 
     if (this.currentChar === "/") {
       this.current = Token.div();
+      this.position++;
+      return this.current;
+    }
+
+    if (this.currentChar === "=") {
+      this.current = new Token(Operations.assign, null);
       this.position++;
       return this.current;
     }
