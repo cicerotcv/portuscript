@@ -109,7 +109,7 @@ export class Tokenizer {
         candidate += this.currentChar;
         this.position++;
       }
-      if (candidate === " ") console.error(true);
+
       this.current = Token.number(Number(candidate));
       return this.current;
     }
