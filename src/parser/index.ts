@@ -5,6 +5,7 @@ import { Conditional } from "../node/conditional";
 import { ConstDec } from "../node/constdect";
 import { Identifier } from "../node/identifier";
 import { Evaluable } from "../node/interpreter-node";
+import { LoopWhile } from "../node/loop_while";
 import { NoOp } from "../node/noop";
 import { Print } from "../node/print";
 import { UnOp } from "../node/unop";
@@ -120,7 +121,7 @@ export class Parser {
       tokens.selectNext();
     }
 
-    // se/senao
+    // if/else
     else if (tokens.current.type === Reserved.se) {
       tokens.selectNext();
 
@@ -144,6 +145,25 @@ export class Parser {
       }
 
       statement = new Conditional(condition, effect, fallback);
+    }
+
+    // while
+    else if (tokens.current.type === Reserved.enquanto) {
+      tokens.selectNext();
+
+      if (tokens.current.type !== Delimiters.openingParentheses)
+        throw Error(`Expected '(' and received ${tokens.current}`);
+      tokens.selectNext();
+
+      const condition = Parser.parseRelExpression();
+
+      if (tokens.current.type !== Delimiters.closingParentheses)
+        throw Error(`Expected ')' and received ${tokens.current}`);
+      tokens.selectNext();
+
+      const effect = Parser.parseBlock();
+
+      statement = new LoopWhile(condition, effect);
     }
 
     // print
