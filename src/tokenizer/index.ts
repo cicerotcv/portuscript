@@ -153,6 +153,35 @@ export class Tokenizer {
       return this.current;
     }
 
+    if (this.currentChar === '"') {
+      this.position++;
+
+      let candidate = "";
+
+      while (this.currentChar !== '"' && !this.hasReachedEnd) {
+        candidate += this.currentChar;
+        this.position++;
+      }
+      this.position++;
+
+      this.current = new Token(BuiltIns.string, candidate);
+      return this.current;
+    }
+
+    if (this.currentChar === "'") {
+      this.position++;
+      let candidate = "";
+
+      while (this.currentChar !== "'" && !this.hasReachedEnd) {
+        candidate += this.currentChar;
+        this.position++;
+      }
+      this.position++;
+
+      this.current = new Token(BuiltIns.string, candidate);
+      return this.current;
+    }
+
     if (NumberUtils.isNumber(this.currentChar)) {
       let candidate = "";
 

@@ -107,6 +107,28 @@ describe("Tokenizer", () => {
       });
     });
 
+    describe("Strings", () => {
+      test("should recognize a single char string", () => {
+        const token = new Tokenizer("'a'").current;
+        expect(token).toEqual(new Token(BuiltIns.string, "a"));
+      });
+
+      test("should recognize an aribitrary string", () => {
+        const token = new Tokenizer("'this is a string'").current;
+        expect(token).toEqual(new Token(BuiltIns.string, "this is a string"));
+      });
+
+      test("[double quote] should recognize a single char string", () => {
+        const token = new Tokenizer('"a"').current;
+        expect(token).toEqual(new Token(BuiltIns.string, "a"));
+      });
+
+      test("[double quote] should recognize an aribitrary string", () => {
+        const token = new Tokenizer('"this is a string"').current;
+        expect(token).toEqual(new Token(BuiltIns.string, "this is a string"));
+      });
+    });
+
     describe("Booleans", () => {
       test("should recognize 'false/falso'", () => {
         const token = new Tokenizer("falso").current;
