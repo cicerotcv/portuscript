@@ -1,6 +1,6 @@
 import { Operations } from "../types/operations";
 import { BinOp } from "./binop";
-import { IntVal } from "./intval";
+import { IntVal } from "./value-number";
 import { UnOp } from "./unop";
 
 describe("Node", () => {
