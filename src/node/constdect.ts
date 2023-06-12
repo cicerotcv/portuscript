@@ -12,13 +12,13 @@ export class ConstDec
 
   evaluate() {
     const [identifier, valueNode] = this.children;
-    const value = valueNode.evaluate();
+    const node = valueNode.evaluate();
 
     st.declare({
       name: identifier.value,
       isMutable: false,
-      type: typeof value,
-      value: value,
+      type: node.type,
+      value: node.value,
     });
   }
 }

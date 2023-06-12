@@ -1,5 +1,6 @@
 import { Tokenizer } from ".";
 import { Token } from "../token";
+import { BuiltIns } from "../types/builtins";
 import { Delimiters } from "../types/delimiters";
 import { Operations } from "../types/operations";
 import { Reserved } from "../types/reserved";
@@ -103,6 +104,18 @@ describe("Tokenizer", () => {
       test("should recognize an aribitrary number", () => {
         const token = new Tokenizer("123").current;
         expect(token).toEqual(Token.number(123));
+      });
+    });
+
+    describe("Booleans", () => {
+      test("should recognize 'false/falso'", () => {
+        const token = new Tokenizer("falso").current;
+        expect(token).toEqual(new Token(BuiltIns.boolean, "falso"));
+      });
+
+      test("should recognize 'true/verdadeiro'", () => {
+        const token = new Tokenizer("verdadeiro").current;
+        expect(token).toEqual(new Token(BuiltIns.boolean, "verdadeiro"));
       });
     });
   });

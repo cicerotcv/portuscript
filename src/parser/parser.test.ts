@@ -1,7 +1,7 @@
 import { Parser } from ".";
 import { st } from "../symboltable/symbol-table";
 
-const createParserTest = (expression: string, result: number) =>
+const createParserTest = (expression: string, result: number | string) =>
   test(`should evaluate '${expression}' to '${result}'`, () => {
     Parser.run(`{ imprima(${expression}); }`);
     expect(console.log).toBeCalledWith(String(result));
@@ -12,8 +12,30 @@ describe("Parser", () => {
     jest.spyOn(console, "log").mockImplementation(jest.fn());
   });
 
-  afterAll(() => {
-    jest.restoreAllMocks();
+  afterAll(() => jest.restoreAllMocks());
+
+  beforeEach(() => jest.clearAllMocks());
+
+  describe("Relational Expression", () => {
+    createParserTest("verdadeiro && verdadeiro", "verdadeiro");
+    createParserTest("falso && verdadeiro", "falso");
+    createParserTest("falso && falso", "falso");
+
+    createParserTest("verdadeiro || verdadeiro", "verdadeiro");
+    createParserTest("falso || verdadeiro", "verdadeiro");
+    createParserTest("falso || falso", "falso");
+
+    createParserTest("2 < 3", "verdadeiro");
+    createParserTest("3 < 2", "falso");
+
+    createParserTest("3 > 2", "verdadeiro");
+    createParserTest("2 > 3", "falso");
+
+    createParserTest("2 == 3", "falso");
+    createParserTest("3 == 2", "falso");
+
+    createParserTest("2 || 3", "verdadeiro");
+    createParserTest("1 && 0", "falso");
   });
 
   describe("Expression", () => {
@@ -31,6 +53,8 @@ describe("Parser", () => {
   });
 
   describe("Factor", () => {
+    createParserTest("(verdadeiro || falso)", "verdadeiro");
+    createParserTest("(verdadeiro && falso)", "falso");
     createParserTest("(1 + 2 + 3)", 6);
     createParserTest("(1 + 2 - 3)", 0);
     createParserTest("1 + 2 * 3", 7);

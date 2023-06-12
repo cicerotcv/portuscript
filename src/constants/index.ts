@@ -1,1 +1,1 @@
-export const WHITESPACES = ["\t", " "];
+export const WHITESPACES = ["\t", " ", "\n"];

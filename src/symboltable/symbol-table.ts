@@ -1,10 +1,22 @@
-type ValueProperties = {
-  type: string;
-  value: string | number | undefined;
+import { ReservedValues } from "../types/reserved-values";
+
+// type ValueProperties<Value = string | number | undefined> = {
+//   type: string;
+//   value: Value;
+//   isMutable: boolean;
+// };
+
+type ValueProperties<Value = "string" | "number" | "boolean"> = {
   isMutable: boolean;
+} & {
+  type: Value;
+  value: string | number;
 };
 
-export type SymbolTableOutput = Omit<ValueProperties, "isMutable">;
+export type StObject<Value = "string" | "number" | "boolean"> = Omit<
+  ValueProperties<Value>,
+  "isMutable"
+>;
 
 export class SymbolTable {
   private table: Record<string, ValueProperties>;
@@ -14,8 +26,12 @@ export class SymbolTable {
   }
 
   private ensureDeclared(name: string) {
-    if (!Object.keys(this.table).includes(name))
+    if (!Object.keys(this.table).includes(name)) {
+      console.table(
+        Object.entries(this.table).map(([name, value]) => ({ name, ...value }))
+      );
       throw new Error(`Identifier '${name}' not declared.`);
+    }
   }
 
   private ensureMutable(name: string) {
@@ -40,11 +56,11 @@ export class SymbolTable {
     Object.assign(this.table[name]!, { type, value });
   }
 
-  get(name: string): SymbolTableOutput {
+  get<Value = "string" | "number" | "boolean">(name: string) {
     this.ensureDeclared(name);
 
     const { type, value } = this.table[name]!;
-    return { type, value };
+    return { type, value } as StObject<Value>;
   }
 
   clear() {

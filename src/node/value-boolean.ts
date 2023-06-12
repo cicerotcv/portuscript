@@ -1,14 +1,23 @@
+import { StObject } from "../symboltable/symbol-table";
+import { ReservedValues } from "../types/reserved-values";
 import { Evaluable, InterpreterNode } from "./interpreter-node";
 
 export class BooleanVal
-  extends InterpreterNode<boolean, []>
-  implements Evaluable<boolean>
+  extends InterpreterNode<string, []>
+  implements Evaluable<StObject<string>>
 {
-  constructor(value: boolean) {
+  constructor(value: string) {
     super(value, []);
   }
 
-  evaluate(): boolean {
-    return this.value;
+  evaluate(): StObject<string> {
+    return { type: "boolean", value: this.value };
+  }
+
+  static toBoolean(value: string | number) {
+    if (String(value) === ReservedValues.boolean.verdadeiro) return true;
+    if (String(value) === ReservedValues.boolean.falso) return false;
+
+    return Boolean(value);
   }
 }
