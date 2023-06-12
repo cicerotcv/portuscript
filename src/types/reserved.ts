@@ -5,4 +5,5 @@ export const Reserved = {
   se: "se",
   senao: "senao",
   enquanto: "enquanto",
+  funcao: "funcao",
 };

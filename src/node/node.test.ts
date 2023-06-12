@@ -2,10 +2,10 @@ import { Operations } from "../types/operations";
 import { BinOp } from "./binop";
 import { IntVal } from "./value-number";
 import { UnOp } from "./unop";
-import { VarDec } from "./vardec";
+import { VarDec } from "./declaration-variable";
 import { Identifier } from "./identifier";
 import { st } from "../table/symbol-table";
-import { ConstDec } from "./constdect";
+import { ConstDec } from "./declaration-constant";
 import { StringVal } from "./value-string";
 
 describe("Node", () => {

@@ -172,6 +172,11 @@ describe("Tokenizer", () => {
       const token = new Tokenizer("enquanto").current;
       expect(token).toEqual(new Token(Reserved.enquanto, null));
     });
+
+    test("should recognize 'funcao'", () => {
+      const token = new Tokenizer("funcao").current;
+      expect(token).toEqual(new Token(Reserved.funcao, null));
+    });
   });
 
   describe("Special", () => {
