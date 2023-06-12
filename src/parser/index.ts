@@ -1,6 +1,7 @@
 import { Assignment } from "../node/assignment";
 import { BinOp } from "../node/binop";
 import { Block } from "../node/block";
+import { Conditional } from "../node/conditional";
 import { ConstDec } from "../node/constdect";
 import { Identifier } from "../node/identifier";
 import { Evaluable } from "../node/interpreter-node";
@@ -75,7 +76,7 @@ export class Parser {
       tokens.selectNext();
     }
 
-    // var dec or const dec
+    // var dec
     else if (tokens.current.type === Reserved.seja) {
       tokens.selectNext();
 
@@ -117,6 +118,32 @@ export class Parser {
       if (tokens.current.type !== Delimiters.semiColon)
         throw Error(`Expected ';' and received ${tokens.current}`);
       tokens.selectNext();
+    }
+
+    // se/senao
+    else if (tokens.current.type === Reserved.se) {
+      tokens.selectNext();
+
+      if (tokens.current.type !== Delimiters.openingParentheses)
+        throw Error(`Expected '(' and received ${tokens.current}`);
+      tokens.selectNext();
+
+      const condition = Parser.parseRelExpression();
+
+      if (tokens.current.type !== Delimiters.closingParentheses)
+        throw Error(`Expected ')' and received ${tokens.current}`);
+      tokens.selectNext();
+
+      const effect = Parser.parseBlock();
+
+      let fallback: Evaluable<any> = new NoOp();
+
+      if (tokens.current.type === Reserved.senao) {
+        tokens.selectNext();
+        fallback = Parser.parseBlock();
+      }
+
+      statement = new Conditional(condition, effect, fallback);
     }
 
     // print
