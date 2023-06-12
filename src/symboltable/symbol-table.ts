@@ -1,11 +1,3 @@
-import { ReservedValues } from "../types/reserved-values";
-
-// type ValueProperties<Value = string | number | undefined> = {
-//   type: string;
-//   value: Value;
-//   isMutable: boolean;
-// };
-
 type ValueProperties<Value = "string" | "number" | "boolean"> = {
   isMutable: boolean;
 } & {
@@ -35,8 +27,9 @@ export class SymbolTable {
   }
 
   private ensureMutable(name: string) {
-    if (!this.table[name]?.isMutable)
-      throw new Error(`Identifier '${name}' is not mutable.`);
+    if (this.table[name]?.isMutable) return;
+
+    throw new Error(`Identifier '${name}' is not mutable.`);
   }
 
   private ensureNotDeclared(name: string) {
@@ -44,9 +37,18 @@ export class SymbolTable {
       throw new Error(`Identifier '${name}' is already declared.`);
   }
 
-  declare({ name, ...props }: { name: string } & ValueProperties) {
+  declare({
+    name,
+    isMutable,
+    type,
+    value,
+  }: { name: string } & ValueProperties) {
     this.ensureNotDeclared(name);
-    Object.assign(this.table, { [name]: { ...props } });
+    this.table[name] = {
+      isMutable,
+      type,
+      value,
+    };
   }
 
   set(name: string, type: string, value: ValueProperties["value"]) {

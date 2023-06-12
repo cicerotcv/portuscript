@@ -74,11 +74,9 @@ export class Parser {
         throw Error(`Expected ';' and received ${tokens.current}`);
       tokens.selectNext();
     }
+
     // var dec or const dec
-    else if (
-      tokens.current.type === Reserved.seja ||
-      tokens.current.type === Reserved.constante
-    ) {
+    else if (tokens.current.type === Reserved.seja) {
       tokens.selectNext();
 
       if (tokens.current.type !== Special.identifier)

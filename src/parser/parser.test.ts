@@ -110,7 +110,8 @@ describe("Parser", () => {
       });
 
       test("reassign constant", () => {
-        expect(() => Parser.run("{ constante abc = 1; abc = 2; }")).toThrow(
+        expect(() => 
+          Parser.run("{ constante abc = 1; abc = 2; }")).toThrow(
           "is not mutable"
         );
       });
