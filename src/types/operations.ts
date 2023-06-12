@@ -9,4 +9,7 @@ export const Operations = {
   compare_equal: "compare_equal",
   compare_greater: "compare_greater",
   compare_less: "compare_lesser",
+
+  and: "and",
+  or: "or",
 };

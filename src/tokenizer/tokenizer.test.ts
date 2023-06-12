@@ -52,6 +52,15 @@ describe("Tokenizer", () => {
       const token = new Tokenizer("<").current;
       expect(token).toEqual(new Token(Operations.compare_less, null));
     });
+
+    test("should recognize 'and (&&)' token", () => {
+      const token = new Tokenizer("&&").current;
+      expect(token).toEqual(new Token(Operations.and, null));
+    });
+    test("should recognize 'or (||)' token", () => {
+      const token = new Tokenizer("||").current;
+      expect(token).toEqual(new Token(Operations.or, null));
+    });
   });
 
   describe("Delimiters", () => {

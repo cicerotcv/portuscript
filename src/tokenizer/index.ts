@@ -79,6 +79,30 @@ export class Tokenizer {
       return this.current;
     }
 
+    if (this.currentChar === "&") {
+      this.position++;
+
+      if (this.currentChar !== "&") {
+        throw new Error(`Unrecognized char '${this.currentChar}'`);
+      }
+      this.position++;
+
+      this.current = new Token(Operations.and, null);
+      return this.current;
+    }
+
+    if (this.currentChar === "|") {
+      this.position++;
+
+      if (this.currentChar !== "|") {
+        throw new Error(`Unrecognized char '${this.currentChar}'`);
+      }
+      this.position++;
+
+      this.current = new Token(Operations.or, null);
+      return this.current;
+    }
+
     if (this.currentChar === "<") {
       this.current = new Token(Operations.compare_less, null);
       this.position++;
