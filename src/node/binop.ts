@@ -72,6 +72,10 @@ export class BinOp
         return { type: "number", value: arithmetical };
       }
 
+      if (left.type === "string" && this.value === Operations.plus) {
+        return { type: "string", value: `${left.value}${right.value}` };
+      }
+
       throw new Error(
         `Unrecognized arithmetical operation '${this.value}' between ${left.value} and ${right.value}`
       );

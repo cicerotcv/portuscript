@@ -11,6 +11,7 @@ import { Print } from "../node/print";
 import { UnOp } from "../node/unop";
 import { BooleanVal } from "../node/value-boolean";
 import { IntVal } from "../node/value-number";
+import { StringVal } from "../node/value-string";
 import { VarDec } from "../node/vardec";
 import { Tokenizer } from "../tokenizer";
 import { BuiltIns } from "../types/builtins";
@@ -326,6 +327,12 @@ export class Parser {
       const number = new BooleanVal(tokens.current.value as string);
       tokens.selectNext();
       return number;
+    }
+
+    if (tokens.current.type === BuiltIns.string) {
+      const string = new StringVal(tokens.current.value as string);
+      tokens.selectNext();
+      return string;
     }
 
     if (tokens.current.type === Operations.minus) {

@@ -6,6 +6,7 @@ import { VarDec } from "./vardec";
 import { Identifier } from "./identifier";
 import { st } from "../symboltable/symbol-table";
 import { ConstDec } from "./constdect";
+import { StringVal } from "./value-string";
 
 describe("Node", () => {
   let intValOne: IntVal;
@@ -54,6 +55,15 @@ describe("Node", () => {
       expect(
         new BinOp(Operations.div, [intValTwelve, intValThree]).evaluate().value
       ).toEqual(4);
+    });
+
+    test("should concat string and number", () => {
+      expect(
+        new BinOp(Operations.plus, [
+          new StringVal("string"),
+          intValOne,
+        ]).evaluate().value
+      ).toEqual("string1");
     });
   });
 
