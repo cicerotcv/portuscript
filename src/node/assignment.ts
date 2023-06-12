@@ -1,4 +1,4 @@
-import { StObject, st } from "../symboltable/symbol-table";
+import { StObject, SymbolTable } from "../table/symbol-table";
 import { Identifier } from "./identifier";
 import { Evaluable, InterpreterNode } from "./interpreter-node";
 
@@ -11,10 +11,10 @@ export class Assignment
     super(null, [identifier, value]);
   }
 
-  evaluate() {
+  evaluate(st: SymbolTable) {
     const [identifier, valueNode] = this.children;
 
-    const value = valueNode.evaluate();
+    const value = valueNode.evaluate(st);
 
     st.set(identifier.value, value.type, value.value);
   }

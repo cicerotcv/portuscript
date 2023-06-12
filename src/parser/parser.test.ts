@@ -1,15 +1,18 @@
 import { Parser } from ".";
-import { st } from "../symboltable/symbol-table";
+import { config } from "../config";
+import { st } from "../table/symbol-table";
+
+let logger = jest.fn();
 
 const createParserTest = (expression: string, result: number | string) =>
   test(`should evaluate '${expression}' to '${result}'`, () => {
     Parser.run(`{ imprima(${expression}); }`);
-    expect(console.log).toBeCalledWith(String(result));
+    expect(logger).toBeCalledWith(String(result));
   });
 
 describe("Parser", () => {
   beforeAll(() => {
-    jest.spyOn(console, "log").mockImplementation(jest.fn());
+    config.setPrint(logger);
   });
 
   afterAll(() => jest.restoreAllMocks());
@@ -117,7 +120,11 @@ describe("Parser", () => {
     });
 
     describe("Print", () => {
-      const logSpy = jest.spyOn(console, "log").mockImplementation(jest.fn());
+      const logSpy = jest.fn();
+
+      beforeAll(() => {
+        config.setPrint(logSpy);
+      });
 
       beforeEach(() => {
         // clear console.log number of calls, etc.

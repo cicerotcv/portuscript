@@ -1,22 +1,22 @@
-import { StObject, st } from "../symboltable/symbol-table";
+import { SymbolTable } from "../table/symbol-table";
 import { Identifier } from "./identifier";
 import { Evaluable, InterpreterNode } from "./interpreter-node";
 
-export class VarDec
-  extends InterpreterNode<null, [Identifier, Evaluable<StObject>]>
+export class ConstDec
+  extends InterpreterNode<null, [Identifier, Evaluable<any>]>
   implements Evaluable<void>
 {
-  constructor(identifier: Identifier, value: Evaluable<StObject>) {
+  constructor(identifier: Identifier, value: Evaluable<any>) {
     super(null, [identifier, value]);
   }
 
-  evaluate() {
+  evaluate(st: SymbolTable) {
     const [identifier, valueNode] = this.children;
-    const node = valueNode.evaluate();
+    const node = valueNode.evaluate(st);
 
     st.declare({
       name: identifier.value,
-      isMutable: true,
+      isMutable: false,
       type: node.type,
       value: node.value,
     });

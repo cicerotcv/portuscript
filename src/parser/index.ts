@@ -2,7 +2,7 @@ import { Assignment } from "../node/assignment";
 import { BinOp } from "../node/binop";
 import { Block } from "../node/block";
 import { Conditional } from "../node/conditional";
-import { ConstDec } from "../node/constdect";
+import { ConstDec } from "../node/declaration-constant";
 import { Identifier } from "../node/identifier";
 import { Evaluable } from "../node/interpreter-node";
 import { LoopWhile } from "../node/loop_while";
@@ -12,16 +12,33 @@ import { UnOp } from "../node/unop";
 import { BooleanVal } from "../node/value-boolean";
 import { IntVal } from "../node/value-number";
 import { StringVal } from "../node/value-string";
-import { VarDec } from "../node/vardec";
+import { VarDec } from "../node/declaration-variable";
 import { Tokenizer } from "../tokenizer";
 import { BuiltIns } from "../types/builtins";
 import { Delimiters } from "../types/delimiters";
 import { Operations } from "../types/operations";
 import { Reserved } from "../types/reserved";
 import { Special } from "../types/special";
+import { UndefinedVal } from "../node/value-undefined";
+import { FuncDec } from "../node/declaration-function";
+import { st } from "../table/symbol-table";
+import { FuncCall } from "../node/function-call";
+import { Return } from "../node/return";
 
 export class Parser {
   static tokenizer: Tokenizer;
+
+  static parseProgram() {
+    const tokens = Parser.tokenizer;
+
+    const program = []; // the same as block
+
+    while (tokens.current.type !== Delimiters.eof) {
+      program.push(Parser.parseStatement());
+    }
+
+    return new Block(program);
+  }
 
   static parseBlock() {
     const tokens = Parser.tokenizer;
@@ -46,6 +63,52 @@ export class Parser {
     tokens.selectNext();
 
     return new Block(statements);
+  }
+
+  static parseDeclaration() {
+    const tokens = Parser.tokenizer;
+
+    tokens.selectNext();
+
+    if (tokens.current.type !== Special.identifier)
+      throw new Error(`Function declaration is missing a name`);
+
+    const functionName = new Identifier(tokens.current.value as string);
+
+    tokens.selectNext();
+
+    if (tokens.current.type !== Delimiters.openingParentheses)
+      throw Error(`Expected '(' and received ${tokens.current}`);
+    tokens.selectNext();
+
+    const parameters: VarDec[] = [];
+
+    while (tokens.current.type === Special.identifier) {
+      parameters.push(
+        new VarDec(
+          new Identifier(tokens.current.value as string),
+          new UndefinedVal()
+        )
+      );
+      tokens.selectNext();
+
+      if (tokens.current.type === Delimiters.comma) {
+        tokens.selectNext();
+      }
+    }
+
+    if (tokens.current.type !== Delimiters.closingParentheses)
+      throw Error(`Expected ')' and received ${tokens.current}`);
+    tokens.selectNext();
+
+    if (tokens.current.type !== Delimiters.openingCurlyBrackets)
+      throw Error(
+        `Function '${functionName.value}' is missing. Received: ${tokens.current}`
+      );
+
+    const functionBody = Parser.parseBlock();
+
+    return new FuncDec(functionName, parameters, functionBody);
   }
 
   static parseStatement() {
@@ -192,6 +255,32 @@ export class Parser {
 
       statement = new Print(children);
     }
+
+    // return
+    else if (tokens.current.type === Reserved.retorne) {
+      tokens.selectNext();
+
+      const retval = new Return(Parser.parseRelExpression());
+
+      if (tokens.current.type !== Delimiters.semiColon)
+        throw Error(`Expected ';' and received ${tokens.current}`);
+      tokens.selectNext();
+
+      return retval;
+    }
+
+    // function
+    else if (tokens.current.type === Reserved.funcao) {
+      statement = Parser.parseDeclaration();
+    }
+
+    // block
+    else if (tokens.current.type === Delimiters.openingCurlyBrackets) {
+      statement = Parser.parseBlock();
+    }
+
+    // else
+    else throw new Error(`Unexpected token '${tokens.current}'`);
 
     return statement;
   }
@@ -348,7 +437,28 @@ export class Parser {
     if (tokens.current.type === Special.identifier) {
       const identifier = new Identifier(tokens.current.value as string);
       tokens.selectNext();
-      return identifier;
+
+      if (tokens.current.type !== Delimiters.openingParentheses)
+        return identifier;
+
+      tokens.selectNext();
+
+      const args = [];
+
+      while (
+        tokens.current.type !== Delimiters.closingParentheses &&
+        tokens.current.type !== Delimiters.eof
+      ) {
+        args.push(Parser.parseRelExpression());
+
+        if (tokens.current.type === Delimiters.comma) tokens.selectNext();
+      }
+
+      if (tokens.current.type !== Delimiters.closingParentheses)
+        throw Error(`Expected ')' and received ${tokens.current}`);
+      tokens.selectNext();
+
+      return new FuncCall(identifier, args);
     }
 
     if (tokens.current.type === Delimiters.openingParentheses) {
@@ -369,7 +479,7 @@ export class Parser {
 
   static run(code: string) {
     Parser.tokenizer = new Tokenizer(code);
-    const root = Parser.parseBlock();
-    return root.evaluate();
+    const root = Parser.parseProgram();
+    return root.evaluate(st);
   }
 }

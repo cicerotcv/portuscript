@@ -1,4 +1,5 @@
-import { StObject } from "../symboltable/symbol-table";
+import { config } from "../config";
+import { StObject, SymbolTable } from "../table/symbol-table";
 import { Evaluable, InterpreterNode } from "./interpreter-node";
 
 export class Print
@@ -9,7 +10,9 @@ export class Print
     super(null, children);
   }
 
-  evaluate() {
-    console.log(this.children.map((child) => child.evaluate().value).join(" "));
+  evaluate(st: SymbolTable) {
+    config.print(
+      this.children.map((child) => child.evaluate(st).value).join(" ")
+    );
   }
 }

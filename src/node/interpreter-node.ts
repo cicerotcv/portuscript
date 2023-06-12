@@ -1,5 +1,7 @@
+import { SymbolTable } from "../table/symbol-table";
+
 export interface Evaluable<T> {
-  evaluate(): T;
+  evaluate(st: SymbolTable): T;
 }
 
 export abstract class InterpreterNode<

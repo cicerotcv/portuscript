@@ -1,11 +1,13 @@
-type ValueProperties<Value = "string" | "number" | "boolean"> = {
+type ValueTypes = "string" | "number" | "boolean" | "indefinido";
+
+type ValueProperties<Value = ValueTypes> = {
   isMutable: boolean;
 } & {
   type: Value;
   value: string | number;
 };
 
-export type StObject<Value = "string" | "number" | "boolean"> = Omit<
+export type StObject<Value = ValueTypes> = Omit<
   ValueProperties<Value>,
   "isMutable"
 >;
@@ -58,7 +60,7 @@ export class SymbolTable {
     Object.assign(this.table[name]!, { type, value });
   }
 
-  get<Value = "string" | "number" | "boolean">(name: string) {
+  get<Value = ValueTypes>(name: string) {
     this.ensureDeclared(name);
 
     const { type, value } = this.table[name]!;
@@ -67,6 +69,12 @@ export class SymbolTable {
 
   clear() {
     this.table = {};
+  }
+
+  show() {
+    console.table(
+      Object.entries(this.table).map(([name, props]) => ({ name, ...props }))
+    );
   }
 }
 

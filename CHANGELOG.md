@@ -1,5 +1,11 @@
 # @cicerotcv/portuscript
 
+## 3.0.0
+
+### Major Changes
+
+- include functions
+
 ## 2.3.0
 
 ### Minor Changes
