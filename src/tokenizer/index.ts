@@ -67,7 +67,26 @@ export class Tokenizer {
     }
 
     if (this.currentChar === "=") {
-      this.current = new Token(Operations.assign, null);
+      this.position++;
+
+      if (this.currentChar === "=") {
+        this.current = new Token(Operations.compare_equal, null);
+        this.position++;
+      } else {
+        this.current = new Token(Operations.assign, null);
+      }
+
+      return this.current;
+    }
+
+    if (this.currentChar === "<") {
+      this.current = new Token(Operations.compare_less, null);
+      this.position++;
+      return this.current;
+    }
+
+    if (this.currentChar === ">") {
+      this.current = new Token(Operations.compare_greater, null);
       this.position++;
       return this.current;
     }

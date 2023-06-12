@@ -37,6 +37,21 @@ describe("Tokenizer", () => {
       const token = new Tokenizer("=").current;
       expect(token).toEqual(new Token(Operations.assign, null));
     });
+
+    test("should recognize 'equal' token", () => {
+      const token = new Tokenizer("==").current;
+      expect(token).toEqual(new Token(Operations.compare_equal, null));
+    });
+
+    test("should recognize 'greater than' token", () => {
+      const token = new Tokenizer(">").current;
+      expect(token).toEqual(new Token(Operations.compare_greater, null));
+    });
+
+    test("should recognize 'less than' token", () => {
+      const token = new Tokenizer("<").current;
+      expect(token).toEqual(new Token(Operations.compare_less, null));
+    });
   });
 
   describe("Delimiters", () => {
