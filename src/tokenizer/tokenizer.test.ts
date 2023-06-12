@@ -135,6 +135,21 @@ describe("Tokenizer", () => {
       const token = new Tokenizer("imprima").current;
       expect(token).toEqual(new Token(Reserved.imprima, null));
     });
+
+    test("should recognize 'se'", () => {
+      const token = new Tokenizer("se").current;
+      expect(token).toEqual(new Token(Reserved.se, null));
+    });
+
+    test("should recognize 'senao'", () => {
+      const token = new Tokenizer("senao").current;
+      expect(token).toEqual(new Token(Reserved.senao, null));
+    });
+
+    test("should recognize 'enquanto'", () => {
+      const token = new Tokenizer("enquanto").current;
+      expect(token).toEqual(new Token(Reserved.enquanto, null));
+    });
   });
 
   describe("Special", () => {
