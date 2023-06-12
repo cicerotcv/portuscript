@@ -1,5 +1,5 @@
 import { Parser } from ".";
-import { st } from "../symboltable/symbol-table";
+import { st } from "../table/symbol-table";
 
 const createParserTest = (expression: string, result: number | string) =>
   test(`should evaluate '${expression}' to '${result}'`, () => {

@@ -4,7 +4,7 @@ import { IntVal } from "./value-number";
 import { UnOp } from "./unop";
 import { VarDec } from "./vardec";
 import { Identifier } from "./identifier";
-import { st } from "../symboltable/symbol-table";
+import { st } from "../table/symbol-table";
 import { ConstDec } from "./constdect";
 import { StringVal } from "./value-string";
 

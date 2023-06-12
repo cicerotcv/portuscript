@@ -1,4 +1,4 @@
-import { StObject, st } from "../symboltable/symbol-table";
+import { StObject, st } from "../table/symbol-table";
 import { Identifier } from "./identifier";
 import { Evaluable, InterpreterNode } from "./interpreter-node";
 
