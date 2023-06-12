@@ -67,7 +67,7 @@ export class Parser {
 
       tokens.selectNext();
 
-      statement = new Assignment(identifier, Parser.parseExpression());
+      statement = new Assignment(identifier, Parser.parseRelExpression());
 
       if (tokens.current.type !== Delimiters.semiColon)
         throw Error(`Expected ';' and received ${tokens.current}`);
@@ -88,7 +88,7 @@ export class Parser {
 
       tokens.selectNext();
 
-      statement = new VarDec(identifier, Parser.parseExpression());
+      statement = new VarDec(identifier, Parser.parseRelExpression());
 
       if (tokens.current.type !== Delimiters.semiColon)
         throw Error(`Expected ';' and received ${tokens.current}`);
@@ -109,7 +109,7 @@ export class Parser {
 
       tokens.selectNext();
 
-      statement = new ConstDec(identifier, Parser.parseExpression());
+      statement = new ConstDec(identifier, Parser.parseRelExpression());
 
       if (tokens.current.type !== Delimiters.semiColon)
         throw Error(`Expected ';' and received ${tokens.current}`);
@@ -123,11 +123,11 @@ export class Parser {
         throw Error(`Expected '(' and received ${tokens.current}`);
       tokens.selectNext();
 
-      const children = [Parser.parseExpression()];
+      const children = [Parser.parseRelExpression()];
 
       while (tokens.current.type === Delimiters.comma) {
         tokens.selectNext();
-        children.push(Parser.parseExpression());
+        children.push(Parser.parseRelExpression());
       }
 
       if (tokens.current.type !== Delimiters.closingParentheses)
@@ -144,25 +144,43 @@ export class Parser {
     return statement;
   }
 
+  static parseRelExpression() {
+    return Parser.parseExpression();
+  }
+
   static parseExpression() {
     const tokens = Parser.tokenizer;
 
     let expression = Parser.parseTerm();
 
-    while ([Operations.minus, Operations.plus].includes(tokens.current.type)) {
+    while (
+      [Operations.minus, Operations.plus, Operations.or].includes(
+        tokens.current.type
+      )
+    ) {
+      // plus
       if (tokens.current.type === Operations.plus) {
         tokens.selectNext();
         expression = new BinOp(Operations.plus, [
           expression,
           Parser.parseTerm(),
         ]);
-      } else if (tokens.current.type === Operations.minus) {
+      }
+      // minus
+      else if (tokens.current.type === Operations.minus) {
         tokens.selectNext();
         expression = new BinOp(Operations.minus, [
           expression,
           Parser.parseTerm(),
         ]);
-      } else {
+      }
+      // or
+      else if (tokens.current.type === Operations.or) {
+        tokens.selectNext();
+        expression = new BinOp(Operations.or, [expression, Parser.parseTerm()]);
+      }
+      // unexpected
+      else {
         throw new Error(`Expected "+" or "-" and got ${tokens.current}`);
       }
     }
@@ -175,14 +193,28 @@ export class Parser {
 
     let term = Parser.parseFactor();
 
-    while ([Operations.multi, Operations.div].includes(tokens.current.type)) {
+    while (
+      [Operations.multi, Operations.div, Operations.and].includes(
+        tokens.current.type
+      )
+    ) {
+      // multi
       if (tokens.current.type === Operations.multi) {
         tokens.selectNext();
         term = new BinOp(Operations.multi, [term, Parser.parseFactor()]);
-      } else if (tokens.current.type === Operations.div) {
+      }
+      // div
+      else if (tokens.current.type === Operations.div) {
         tokens.selectNext();
         term = new BinOp(Operations.div, [term, Parser.parseFactor()]);
-      } else {
+      }
+      // and
+      else if (tokens.current.type === Operations.and) {
+        tokens.selectNext();
+        term = new BinOp(Operations.and, [term, Parser.parseFactor()]);
+      }
+      // unexpected
+      else {
         throw new Error(`Expected "*" or "/" and got ${tokens.current}`);
       }
     }
@@ -218,7 +250,7 @@ export class Parser {
     if (tokens.current.type === Delimiters.openingParentheses) {
       tokens.selectNext();
 
-      const expression = Parser.parseExpression();
+      const expression = Parser.parseRelExpression();
 
       if (tokens.current.type !== Delimiters.closingParentheses) {
         throw new Error(`Expected ")" and got ${tokens.current}`);
