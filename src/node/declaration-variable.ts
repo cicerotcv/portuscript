@@ -1,4 +1,4 @@
-import { StObject, st } from "../table/symbol-table";
+import { StObject, SymbolTable } from "../table/symbol-table";
 import { Identifier } from "./identifier";
 import { Evaluable, InterpreterNode } from "./interpreter-node";
 
@@ -10,9 +10,9 @@ export class VarDec
     super(null, [identifier, value]);
   }
 
-  evaluate() {
+  evaluate(st: SymbolTable) {
     const [identifier, valueNode] = this.children;
-    const node = valueNode.evaluate();
+    const node = valueNode.evaluate(st);
 
     st.declare({
       name: identifier.value,

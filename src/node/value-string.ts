@@ -1,4 +1,4 @@
-import { StObject } from "../table/symbol-table";
+import { StObject, SymbolTable } from "../table/symbol-table";
 import { Evaluable, InterpreterNode } from "./interpreter-node";
 
 export class StringVal
@@ -9,7 +9,7 @@ export class StringVal
     super(value, []);
   }
 
-  evaluate(): StObject<"string"> {
+  evaluate(st: SymbolTable): StObject<"string"> {
     return {
       type: "string",
       value: this.value,

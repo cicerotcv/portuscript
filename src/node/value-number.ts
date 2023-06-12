@@ -1,4 +1,4 @@
-import { StObject } from "../table/symbol-table";
+import { StObject, SymbolTable } from "../table/symbol-table";
 import { Evaluable, InterpreterNode } from "./interpreter-node";
 
 export class IntVal
@@ -9,7 +9,7 @@ export class IntVal
     super(value, []);
   }
 
-  evaluate(): StObject<"number"> {
+  evaluate(st: SymbolTable): StObject<"number"> {
     return {
       type: "number",
       value: this.value,

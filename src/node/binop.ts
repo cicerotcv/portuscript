@@ -1,4 +1,4 @@
-import { StObject } from "../table/symbol-table";
+import { StObject, SymbolTable } from "../table/symbol-table";
 import { Operations } from "../types/operations";
 import { ReservedValues } from "../types/reserved-values";
 import { Evaluable, InterpreterNode } from "./interpreter-node";
@@ -16,9 +16,9 @@ export class BinOp
     super(value, children);
   }
 
-  evaluate(): StObject {
-    const left = this.children[0].evaluate();
-    const right = this.children[1].evaluate();
+  evaluate(st: SymbolTable): StObject {
+    const left = this.children[0].evaluate(st);
+    const right = this.children[1].evaluate(st);
 
     // arithmetical operation
     if (

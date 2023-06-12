@@ -1,4 +1,4 @@
-import { StObject } from "../table/symbol-table";
+import { StObject, SymbolTable } from "../table/symbol-table";
 import { Operations } from "../types/operations";
 import { Evaluable, InterpreterNode } from "./interpreter-node";
 
@@ -14,8 +14,8 @@ export class UnOp
     return this.children[0];
   }
 
-  evaluate(): StObject<"number"> {
-    const child = this.child.evaluate();
+  evaluate(st: SymbolTable): StObject<"number"> {
+    const child = this.child.evaluate(st);
 
     if (this.value === Operations.plus)
       return { type: "number", value: child.value };

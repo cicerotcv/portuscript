@@ -1,4 +1,4 @@
-import { StObject, st } from "../table/symbol-table";
+import { StObject, SymbolTable } from "../table/symbol-table";
 import { Evaluable, InterpreterNode } from "./interpreter-node";
 
 export class Identifier
@@ -9,7 +9,7 @@ export class Identifier
     super(value, []);
   }
 
-  evaluate(): StObject<"number"> {
+  evaluate(st: SymbolTable): StObject<"number"> {
     return st.get(this.value);
   }
 }

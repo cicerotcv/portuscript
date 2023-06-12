@@ -26,34 +26,36 @@ describe("Node", () => {
     });
 
     test("should evaluate correctly", () => {
-      expect(intValOne.evaluate().value).toEqual(1);
+      expect(intValOne.evaluate(st).value).toEqual(1);
     });
   });
 
   describe("BinOp", () => {
     test(`should evaluate '${Operations.plus}'`, () => {
       expect(
-        new BinOp(Operations.plus, [intValTwelve, intValThree]).evaluate().value
+        new BinOp(Operations.plus, [intValTwelve, intValThree]).evaluate(st)
+          .value
       ).toEqual(15);
     });
 
     test(`should evaluate '${Operations.minus}'`, () => {
       expect(
-        new BinOp(Operations.minus, [intValTwelve, intValThree]).evaluate()
+        new BinOp(Operations.minus, [intValTwelve, intValThree]).evaluate(st)
           .value
       ).toEqual(9);
     });
 
     test(`should evaluate '${Operations.multi}'`, () => {
       expect(
-        new BinOp(Operations.multi, [intValTwelve, intValThree]).evaluate()
+        new BinOp(Operations.multi, [intValTwelve, intValThree]).evaluate(st)
           .value
       ).toEqual(36);
     });
 
     test(`should evaluate '${Operations.div}'`, () => {
       expect(
-        new BinOp(Operations.div, [intValTwelve, intValThree]).evaluate().value
+        new BinOp(Operations.div, [intValTwelve, intValThree]).evaluate(st)
+          .value
       ).toEqual(4);
     });
 
@@ -62,22 +64,22 @@ describe("Node", () => {
         new BinOp(Operations.plus, [
           new StringVal("string"),
           intValOne,
-        ]).evaluate().value
+        ]).evaluate(st).value
       ).toEqual("string1");
     });
   });
 
   describe("UnOp", () => {
     test(`should evaluate '${Operations.plus}'`, () => {
-      expect(new UnOp(Operations.plus, intValThree).evaluate().value).toEqual(
+      expect(new UnOp(Operations.plus, intValThree).evaluate(st).value).toEqual(
         3
       );
     });
 
     test(`should evaluate '${Operations.minus}'`, () => {
-      expect(new UnOp(Operations.minus, intValThree).evaluate().value).toEqual(
-        -3
-      );
+      expect(
+        new UnOp(Operations.minus, intValThree).evaluate(st).value
+      ).toEqual(-3);
     });
   });
 
@@ -85,7 +87,7 @@ describe("Node", () => {
     test("declare number", () => {
       const vardec = new VarDec(new Identifier("number"), intValOne);
 
-      vardec.evaluate();
+      vardec.evaluate(st);
 
       const output = st.get("number");
 
@@ -102,7 +104,7 @@ describe("Node", () => {
         new ConstDec(new Identifier("number1"), intValOne),
         new ConstDec(new Identifier("number2"), intValOne),
         new ConstDec(new Identifier("number3"), intValOne),
-      ].forEach((dec) => dec.evaluate());
+      ].forEach((dec) => dec.evaluate(st));
 
       const output1 = st.get("number1");
       const output2 = st.get("number2");

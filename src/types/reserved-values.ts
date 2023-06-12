@@ -3,4 +3,5 @@ export const ReservedValues = {
     verdadeiro: "verdadeiro",
     falso: "falso",
   },
+  indefinido: "indefinido",
 };
