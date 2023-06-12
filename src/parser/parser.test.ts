@@ -1,37 +1,70 @@
 import { Parser } from ".";
 import { st } from "../symboltable/symbol-table";
 
-const createParserTest = (expression: string, result: number) =>
+const createParserTest = (expression: string, result: number | string) =>
   test(`should evaluate '${expression}' to '${result}'`, () => {
-    expect(Parser.run(`${expression}`)).toEqual(result);
+    Parser.run(`{ imprima(${expression}); }`);
+    expect(console.log).toBeCalledWith(String(result));
   });
 
 describe("Parser", () => {
+  beforeAll(() => {
+    jest.spyOn(console, "log").mockImplementation(jest.fn());
+  });
+
+  afterAll(() => jest.restoreAllMocks());
+
+  beforeEach(() => jest.clearAllMocks());
+
+  describe("Relational Expression", () => {
+    createParserTest("verdadeiro && verdadeiro", "verdadeiro");
+    createParserTest("falso && verdadeiro", "falso");
+    createParserTest("falso && falso", "falso");
+
+    createParserTest("verdadeiro || verdadeiro", "verdadeiro");
+    createParserTest("falso || verdadeiro", "verdadeiro");
+    createParserTest("falso || falso", "falso");
+
+    createParserTest("2 < 3", "verdadeiro");
+    createParserTest("3 < 2", "falso");
+
+    createParserTest("3 > 2", "verdadeiro");
+    createParserTest("2 > 3", "falso");
+
+    createParserTest("2 == 3", "falso");
+    createParserTest("3 == 2", "falso");
+
+    createParserTest("2 || 3", "verdadeiro");
+    createParserTest("1 && 0", "falso");
+  });
+
   describe("Expression", () => {
-    // createParserTest("1 + 1", 2);
-    // createParserTest("1 - 1", 0);
-    // createParserTest("1 + 2 + 3", 6);
-    // createParserTest("1 + 2 - 3", 0);
+    createParserTest("1 + 1", 2);
+    createParserTest("1 - 1", 0);
+    createParserTest("1 + 2 + 3", 6);
+    createParserTest("1 + 2 - 3", 0);
   });
 
   describe("Term", () => {
-    // createParserTest("2 * 3", 6);
-    // createParserTest("6 / 3", 2);
-    // createParserTest("2 * 3 * 4", 24);
-    // createParserTest("24 / 3 / 2", 4);
+    createParserTest("2 * 3", 6);
+    createParserTest("6 / 3", 2);
+    createParserTest("2 * 3 * 4", 24);
+    createParserTest("24 / 3 / 2", 4);
   });
 
   describe("Factor", () => {
-    // createParserTest("(1 + 2 + 3)", 6);
-    // createParserTest("(1 + 2 - 3)", 0);
-    // createParserTest("1 + 2 * 3", 7);
-    // createParserTest("(1 + 2) * 3", 9);
-    // createParserTest("2 * 3 + 1", 7);
-    // createParserTest("2 * (3 + 1)", 8);
-    // createParserTest("3 + 6 / 3", 5);
-    // createParserTest("(3 + 6) / 3", 3);
-    // createParserTest("6 * 4 + 3", 27);
-    // createParserTest("6 * (4 + 3)", 42);
+    createParserTest("(verdadeiro || falso)", "verdadeiro");
+    createParserTest("(verdadeiro && falso)", "falso");
+    createParserTest("(1 + 2 + 3)", 6);
+    createParserTest("(1 + 2 - 3)", 0);
+    createParserTest("1 + 2 * 3", 7);
+    createParserTest("(1 + 2) * 3", 9);
+    createParserTest("2 * 3 + 1", 7);
+    createParserTest("2 * (3 + 1)", 8);
+    createParserTest("3 + 6 / 3", 5);
+    createParserTest("(3 + 6) / 3", 3);
+    createParserTest("6 * 4 + 3", 27);
+    createParserTest("6 * (4 + 3)", 42);
   });
 
   describe("Statement", () => {

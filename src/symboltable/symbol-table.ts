@@ -1,10 +1,14 @@
-type ValueProperties = {
-  type: string;
-  value: string | number | undefined;
+type ValueProperties<Value = "string" | "number" | "boolean"> = {
   isMutable: boolean;
+} & {
+  type: Value;
+  value: string | number;
 };
 
-export type SymbolTableOutput = Omit<ValueProperties, "isMutable">;
+export type StObject<Value = "string" | "number" | "boolean"> = Omit<
+  ValueProperties<Value>,
+  "isMutable"
+>;
 
 export class SymbolTable {
   private table: Record<string, ValueProperties>;
@@ -14,13 +18,18 @@ export class SymbolTable {
   }
 
   private ensureDeclared(name: string) {
-    if (!Object.keys(this.table).includes(name))
+    if (!Object.keys(this.table).includes(name)) {
+      console.table(
+        Object.entries(this.table).map(([name, value]) => ({ name, ...value }))
+      );
       throw new Error(`Identifier '${name}' not declared.`);
+    }
   }
 
   private ensureMutable(name: string) {
-    if (!this.table[name]?.isMutable)
-      throw new Error(`Identifier '${name}' is not mutable.`);
+    if (this.table[name]?.isMutable) return;
+
+    throw new Error(`Identifier '${name}' is not mutable.`);
   }
 
   private ensureNotDeclared(name: string) {
@@ -28,9 +37,18 @@ export class SymbolTable {
       throw new Error(`Identifier '${name}' is already declared.`);
   }
 
-  declare({ name, ...props }: { name: string } & ValueProperties) {
+  declare({
+    name,
+    isMutable,
+    type,
+    value,
+  }: { name: string } & ValueProperties) {
     this.ensureNotDeclared(name);
-    Object.assign(this.table, { [name]: { ...props } });
+    this.table[name] = {
+      isMutable,
+      type,
+      value,
+    };
   }
 
   set(name: string, type: string, value: ValueProperties["value"]) {
@@ -40,11 +58,11 @@ export class SymbolTable {
     Object.assign(this.table[name]!, { type, value });
   }
 
-  get(name: string): SymbolTableOutput {
+  get<Value = "string" | "number" | "boolean">(name: string) {
     this.ensureDeclared(name);
 
     const { type, value } = this.table[name]!;
-    return { type, value };
+    return { type, value } as StObject<Value>;
   }
 
   clear() {

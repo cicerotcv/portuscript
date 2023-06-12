@@ -1,5 +1,6 @@
 import { Tokenizer } from ".";
 import { Token } from "../token";
+import { BuiltIns } from "../types/builtins";
 import { Delimiters } from "../types/delimiters";
 import { Operations } from "../types/operations";
 import { Reserved } from "../types/reserved";
@@ -36,6 +37,30 @@ describe("Tokenizer", () => {
     test("should recognize 'assign' token", () => {
       const token = new Tokenizer("=").current;
       expect(token).toEqual(new Token(Operations.assign, null));
+    });
+
+    test("should recognize 'equal' token", () => {
+      const token = new Tokenizer("==").current;
+      expect(token).toEqual(new Token(Operations.compare_equal, null));
+    });
+
+    test("should recognize 'greater than' token", () => {
+      const token = new Tokenizer(">").current;
+      expect(token).toEqual(new Token(Operations.compare_greater, null));
+    });
+
+    test("should recognize 'less than' token", () => {
+      const token = new Tokenizer("<").current;
+      expect(token).toEqual(new Token(Operations.compare_less, null));
+    });
+
+    test("should recognize 'and (&&)' token", () => {
+      const token = new Tokenizer("&&").current;
+      expect(token).toEqual(new Token(Operations.and, null));
+    });
+    test("should recognize 'or (||)' token", () => {
+      const token = new Tokenizer("||").current;
+      expect(token).toEqual(new Token(Operations.or, null));
     });
   });
 
@@ -81,6 +106,40 @@ describe("Tokenizer", () => {
         expect(token).toEqual(Token.number(123));
       });
     });
+
+    describe("Strings", () => {
+      test("should recognize a single char string", () => {
+        const token = new Tokenizer("'a'").current;
+        expect(token).toEqual(new Token(BuiltIns.string, "a"));
+      });
+
+      test("should recognize an aribitrary string", () => {
+        const token = new Tokenizer("'this is a string'").current;
+        expect(token).toEqual(new Token(BuiltIns.string, "this is a string"));
+      });
+
+      test("[double quote] should recognize a single char string", () => {
+        const token = new Tokenizer('"a"').current;
+        expect(token).toEqual(new Token(BuiltIns.string, "a"));
+      });
+
+      test("[double quote] should recognize an aribitrary string", () => {
+        const token = new Tokenizer('"this is a string"').current;
+        expect(token).toEqual(new Token(BuiltIns.string, "this is a string"));
+      });
+    });
+
+    describe("Booleans", () => {
+      test("should recognize 'false/falso'", () => {
+        const token = new Tokenizer("falso").current;
+        expect(token).toEqual(new Token(BuiltIns.boolean, "falso"));
+      });
+
+      test("should recognize 'true/verdadeiro'", () => {
+        const token = new Tokenizer("verdadeiro").current;
+        expect(token).toEqual(new Token(BuiltIns.boolean, "verdadeiro"));
+      });
+    });
   });
 
   describe("Reserved", () => {
@@ -97,6 +156,21 @@ describe("Tokenizer", () => {
     test("should recognize 'imprima'", () => {
       const token = new Tokenizer("imprima").current;
       expect(token).toEqual(new Token(Reserved.imprima, null));
+    });
+
+    test("should recognize 'se'", () => {
+      const token = new Tokenizer("se").current;
+      expect(token).toEqual(new Token(Reserved.se, null));
+    });
+
+    test("should recognize 'senao'", () => {
+      const token = new Tokenizer("senao").current;
+      expect(token).toEqual(new Token(Reserved.senao, null));
+    });
+
+    test("should recognize 'enquanto'", () => {
+      const token = new Tokenizer("enquanto").current;
+      expect(token).toEqual(new Token(Reserved.enquanto, null));
     });
   });
 

@@ -1,11 +1,13 @@
 import { WHITESPACES } from "../constants";
 import { IToken, Token } from "../token";
+import { BuiltIns } from "../types/builtins";
 import { Delimiters } from "../types/delimiters";
-import { NumberUtils } from "../utils/numbers";
-import { Reserved } from "../types/reserved";
-import { StringUtils } from "../utils/string";
-import { Special } from "../types/special";
 import { Operations } from "../types/operations";
+import { Reserved } from "../types/reserved";
+import { ReservedValues } from "../types/reserved-values";
+import { Special } from "../types/special";
+import { NumberUtils } from "../utils/numbers";
+import { StringUtils } from "../utils/string";
 
 export class Tokenizer {
   source: string;
@@ -67,7 +69,50 @@ export class Tokenizer {
     }
 
     if (this.currentChar === "=") {
-      this.current = new Token(Operations.assign, null);
+      this.position++;
+
+      if (this.currentChar === "=") {
+        this.current = new Token(Operations.compare_equal, null);
+        this.position++;
+      } else {
+        this.current = new Token(Operations.assign, null);
+      }
+
+      return this.current;
+    }
+
+    if (this.currentChar === "&") {
+      this.position++;
+
+      if (this.currentChar !== "&") {
+        throw new Error(`Unrecognized char '${this.currentChar}'`);
+      }
+      this.position++;
+
+      this.current = new Token(Operations.and, null);
+      return this.current;
+    }
+
+    if (this.currentChar === "|") {
+      this.position++;
+
+      if (this.currentChar !== "|") {
+        throw new Error(`Unrecognized char '${this.currentChar}'`);
+      }
+      this.position++;
+
+      this.current = new Token(Operations.or, null);
+      return this.current;
+    }
+
+    if (this.currentChar === "<") {
+      this.current = new Token(Operations.compare_less, null);
+      this.position++;
+      return this.current;
+    }
+
+    if (this.currentChar === ">") {
+      this.current = new Token(Operations.compare_greater, null);
       this.position++;
       return this.current;
     }
@@ -108,6 +153,35 @@ export class Tokenizer {
       return this.current;
     }
 
+    if (this.currentChar === '"') {
+      this.position++;
+
+      let candidate = "";
+
+      while (this.currentChar !== '"' && !this.hasReachedEnd) {
+        candidate += this.currentChar;
+        this.position++;
+      }
+      this.position++;
+
+      this.current = new Token(BuiltIns.string, candidate);
+      return this.current;
+    }
+
+    if (this.currentChar === "'") {
+      this.position++;
+      let candidate = "";
+
+      while (this.currentChar !== "'" && !this.hasReachedEnd) {
+        candidate += this.currentChar;
+        this.position++;
+      }
+      this.position++;
+
+      this.current = new Token(BuiltIns.string, candidate);
+      return this.current;
+    }
+
     if (NumberUtils.isNumber(this.currentChar)) {
       let candidate = "";
 
@@ -131,9 +205,16 @@ export class Tokenizer {
         this.position++;
       }
 
-      if (Object.values(Reserved).includes(candidate)) {
+      // verdadeiro/falso
+      if (Object.values(ReservedValues.boolean).includes(candidate)) {
+        this.current = new Token(BuiltIns.boolean, candidate); // reserved word
+      }
+      // reserved words
+      else if (Object.values(Reserved).includes(candidate)) {
         this.current = new Token(candidate, null); // reserved word
-      } else {
+      }
+      // identifier/function
+      else {
         this.current = new Token(Special.identifier, candidate);
       }
 

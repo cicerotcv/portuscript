@@ -1,6 +1,6 @@
 {
   "name": "@cicerotcv/portuscript",
-  "version": "2.0.0",
+  "version": "2.3.0",
   "description": "Simplified Javascript interpreter with portuguese tokens.",
   "private": false,
   "main": "dist/index.js",

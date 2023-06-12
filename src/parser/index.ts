@@ -1,13 +1,17 @@
 import { Assignment } from "../node/assignment";
 import { BinOp } from "../node/binop";
 import { Block } from "../node/block";
+import { Conditional } from "../node/conditional";
 import { ConstDec } from "../node/constdect";
 import { Identifier } from "../node/identifier";
-import { Evaluable, InterpreterNode } from "../node/interpreter-node";
-import { IntVal } from "../node/intval";
+import { Evaluable } from "../node/interpreter-node";
+import { LoopWhile } from "../node/loop_while";
 import { NoOp } from "../node/noop";
 import { Print } from "../node/print";
 import { UnOp } from "../node/unop";
+import { BooleanVal } from "../node/value-boolean";
+import { IntVal } from "../node/value-number";
+import { StringVal } from "../node/value-string";
 import { VarDec } from "../node/vardec";
 import { Tokenizer } from "../tokenizer";
 import { BuiltIns } from "../types/builtins";
@@ -56,7 +60,7 @@ export class Parser {
     }
 
     // assignment
-    if (tokens.current.type === Special.identifier) {
+    else if (tokens.current.type === Special.identifier) {
       const identifier = new Identifier(tokens.current.value as string);
 
       tokens.selectNext();
@@ -67,14 +71,15 @@ export class Parser {
 
       tokens.selectNext();
 
-      statement = new Assignment(identifier, Parser.parseExpression());
+      statement = new Assignment(identifier, Parser.parseRelExpression());
 
       if (tokens.current.type !== Delimiters.semiColon)
         throw Error(`Expected ';' and received ${tokens.current}`);
       tokens.selectNext();
     }
-    // vardec
-    if (tokens.current.type === Reserved.seja) {
+
+    // var dec
+    else if (tokens.current.type === Reserved.seja) {
       tokens.selectNext();
 
       if (tokens.current.type !== Special.identifier)
@@ -88,14 +93,15 @@ export class Parser {
 
       tokens.selectNext();
 
-      statement = new VarDec(identifier, Parser.parseExpression());
+      statement = new VarDec(identifier, Parser.parseRelExpression());
 
       if (tokens.current.type !== Delimiters.semiColon)
         throw Error(`Expected ';' and received ${tokens.current}`);
       tokens.selectNext();
     }
 
-    if (tokens.current.type === Reserved.constante) {
+    // const dec
+    else if (tokens.current.type === Reserved.constante) {
       tokens.selectNext();
 
       if (tokens.current.type !== Special.identifier)
@@ -109,25 +115,71 @@ export class Parser {
 
       tokens.selectNext();
 
-      statement = new ConstDec(identifier, Parser.parseExpression());
+      statement = new ConstDec(identifier, Parser.parseRelExpression());
 
       if (tokens.current.type !== Delimiters.semiColon)
         throw Error(`Expected ';' and received ${tokens.current}`);
       tokens.selectNext();
     }
 
-    if (tokens.current.type === Reserved.imprima) {
+    // if/else
+    else if (tokens.current.type === Reserved.se) {
       tokens.selectNext();
 
       if (tokens.current.type !== Delimiters.openingParentheses)
         throw Error(`Expected '(' and received ${tokens.current}`);
       tokens.selectNext();
 
-      const children = [Parser.parseExpression()];
+      const condition = Parser.parseRelExpression();
+
+      if (tokens.current.type !== Delimiters.closingParentheses)
+        throw Error(`Expected ')' and received ${tokens.current}`);
+      tokens.selectNext();
+
+      const effect = Parser.parseBlock();
+
+      let fallback: Evaluable<any> = new NoOp();
+
+      if (tokens.current.type === Reserved.senao) {
+        tokens.selectNext();
+        fallback = Parser.parseBlock();
+      }
+
+      statement = new Conditional(condition, effect, fallback);
+    }
+
+    // while
+    else if (tokens.current.type === Reserved.enquanto) {
+      tokens.selectNext();
+
+      if (tokens.current.type !== Delimiters.openingParentheses)
+        throw Error(`Expected '(' and received ${tokens.current}`);
+      tokens.selectNext();
+
+      const condition = Parser.parseRelExpression();
+
+      if (tokens.current.type !== Delimiters.closingParentheses)
+        throw Error(`Expected ')' and received ${tokens.current}`);
+      tokens.selectNext();
+
+      const effect = Parser.parseBlock();
+
+      statement = new LoopWhile(condition, effect);
+    }
+
+    // print
+    else if (tokens.current.type === Reserved.imprima) {
+      tokens.selectNext();
+
+      if (tokens.current.type !== Delimiters.openingParentheses)
+        throw Error(`Expected '(' and received ${tokens.current}`);
+      tokens.selectNext();
+
+      const children = [Parser.parseRelExpression()];
 
       while (tokens.current.type === Delimiters.comma) {
         tokens.selectNext();
-        children.push(Parser.parseExpression());
+        children.push(Parser.parseRelExpression());
       }
 
       if (tokens.current.type !== Delimiters.closingParentheses)
@@ -144,26 +196,84 @@ export class Parser {
     return statement;
   }
 
+  static parseRelExpression() {
+    const tokens = Parser.tokenizer;
+
+    let expression = Parser.parseExpression();
+
+    while (
+      [
+        Operations.compare_greater,
+        Operations.compare_less,
+        Operations.compare_equal,
+      ].includes(tokens.current.type)
+    ) {
+      // compare_equal
+      if (tokens.current.type === Operations.compare_equal) {
+        tokens.selectNext();
+        expression = new BinOp(Operations.compare_equal, [
+          expression,
+          Parser.parseExpression(),
+        ]);
+      }
+      // compare_less
+      else if (tokens.current.type === Operations.compare_less) {
+        tokens.selectNext();
+        expression = new BinOp(Operations.compare_less, [
+          expression,
+          Parser.parseExpression(),
+        ]);
+      }
+      // compare_greater
+      else if (tokens.current.type === Operations.compare_greater) {
+        tokens.selectNext();
+        expression = new BinOp(Operations.compare_greater, [
+          expression,
+          Parser.parseExpression(),
+        ]);
+      }
+      // unexpected
+      else
+        throw new Error(`Expected ">", "<" or "==" and got ${tokens.current}`);
+    }
+
+    return expression;
+  }
+
   static parseExpression() {
     const tokens = Parser.tokenizer;
 
     let expression = Parser.parseTerm();
 
-    while ([Operations.minus, Operations.plus].includes(tokens.current.type)) {
+    while (
+      [Operations.minus, Operations.plus, Operations.or].includes(
+        tokens.current.type
+      )
+    ) {
+      // plus
       if (tokens.current.type === Operations.plus) {
         tokens.selectNext();
         expression = new BinOp(Operations.plus, [
           expression,
           Parser.parseTerm(),
         ]);
-      } else if (tokens.current.type === Operations.minus) {
+      }
+      // minus
+      else if (tokens.current.type === Operations.minus) {
         tokens.selectNext();
         expression = new BinOp(Operations.minus, [
           expression,
           Parser.parseTerm(),
         ]);
-      } else {
-        throw new Error(`Expected "+" or "-" and got ${tokens.current}`);
+      }
+      // or
+      else if (tokens.current.type === Operations.or) {
+        tokens.selectNext();
+        expression = new BinOp(Operations.or, [expression, Parser.parseTerm()]);
+      }
+      // unexpected
+      else {
+        throw new Error(`Expected "+", "-" or '||' and got ${tokens.current}`);
       }
     }
 
@@ -175,15 +285,29 @@ export class Parser {
 
     let term = Parser.parseFactor();
 
-    while ([Operations.multi, Operations.div].includes(tokens.current.type)) {
+    while (
+      [Operations.multi, Operations.div, Operations.and].includes(
+        tokens.current.type
+      )
+    ) {
+      // multi
       if (tokens.current.type === Operations.multi) {
         tokens.selectNext();
         term = new BinOp(Operations.multi, [term, Parser.parseFactor()]);
-      } else if (tokens.current.type === Operations.div) {
+      }
+      // div
+      else if (tokens.current.type === Operations.div) {
         tokens.selectNext();
         term = new BinOp(Operations.div, [term, Parser.parseFactor()]);
-      } else {
-        throw new Error(`Expected "*" or "/" and got ${tokens.current}`);
+      }
+      // and
+      else if (tokens.current.type === Operations.and) {
+        tokens.selectNext();
+        term = new BinOp(Operations.and, [term, Parser.parseFactor()]);
+      }
+      // unexpected
+      else {
+        throw new Error(`Expected "*", "/" or "&&" and got ${tokens.current}`);
       }
     }
 
@@ -197,6 +321,18 @@ export class Parser {
       const number = new IntVal(tokens.current.value as number);
       tokens.selectNext();
       return number;
+    }
+
+    if (tokens.current.type === BuiltIns.boolean) {
+      const number = new BooleanVal(tokens.current.value as string);
+      tokens.selectNext();
+      return number;
+    }
+
+    if (tokens.current.type === BuiltIns.string) {
+      const string = new StringVal(tokens.current.value as string);
+      tokens.selectNext();
+      return string;
     }
 
     if (tokens.current.type === Operations.minus) {
@@ -218,7 +354,7 @@ export class Parser {
     if (tokens.current.type === Delimiters.openingParentheses) {
       tokens.selectNext();
 
-      const expression = Parser.parseExpression();
+      const expression = Parser.parseRelExpression();
 
       if (tokens.current.type !== Delimiters.closingParentheses) {
         throw new Error(`Expected ")" and got ${tokens.current}`);
